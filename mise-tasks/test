@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#MISE description="Run plugin tests - install and execute tool"
+set -euo pipefail
+
+VERSION="0.1.3"
+
+mise plugin link --force remotecli .
+mise cache clear
+mise install "remotecli@${VERSION}"
+
+# Capture and display the output while also verifying it
+output=$(mise exec "remotecli@${VERSION}" -- remotecli --version)
+echo "remotecli output: $output"
+
+if echo "$output" | grep -q "${VERSION}"; then
+    echo "✓ Tests passed"
+else
+    echo "✗ Test failed: expected version ${VERSION}"
+    exit 1
+fi
